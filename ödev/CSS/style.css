@@ -1,17 +1,6 @@
-.h1 {
-    font-family: "Poppins", sans-serif;
-    align-items: center;
-    display:flex;
-    flex-direction: row;
-    justify-content: space-around;
-}
 
-.media {
-    display:flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.7);
-    min-width: 30vw;
-    min-height: 40vh;
-}
+
+
+
+
+
