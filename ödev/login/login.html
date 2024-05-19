@@ -1,28 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <style>
+        body {
+            background-image: url("/ödev/IMAGES/bird-s-eye-view-shore-break.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <form id="loginForm" action="login.php" method="POST">
-            <h2>Login</h2>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+            <img src="/ödev/IMAGES/logo.jpg" width="50" height="50" alt="" style="background-color: darkslategrey;">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/ödev/ödev.html">Ana Sayfa <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">Hakkımda</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/ödev/hakkımda.html">Hobilerim</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/ödev/ozgecmis.html">Özgeçmiş</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">Şehrim</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="nufus.html">Genel Bilgiler</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="gezilecekyerler.html">Gezilecek Yerler</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="miras.html">Mirasımız</a>
+                    </div>
+                </li>
+                <a class="nav-link" href="iletişim.html">İletişim</a>
+            </ul>
+            <a href="#" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">Kayıt Ol</a>
+        </div>
+    </nav>
+    <div id="login-app" class="container mt-5">
+        <form @submit.prevent="validateForm">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="exampleInputEmail1">Kullanıcı Adı (Öğrenci Numarası)</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" v-model="username" placeholder="Örneğin: b1812100001@sakarya.edu.tr" required>
+                <small id="emailHelp" class="form-text text-muted">Sakarya Üniversitesi mail adresi.</small>
             </div>
             <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <label for="exampleInputPassword1">Şifre</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" v-model="password" placeholder="Şifre" required>
             </div>
-            <button type="submit">Login</button>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Beni hatırla</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Giriş Yap</button>
+            <div v-if="errorMessage" class="mt-3 alert alert-danger">{{ errorMessage }}</div>
         </form>
-        <div id="message"></div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        new Vue({
+            el: '#login-app',
+            data: {
+                username: '',
+                password: '',
+                errorMessage: ''
+            },
+            methods: {
+                validateForm() {
+                    const emailPattern = /^[a-zA-Z0-9._%+-]+@sakarya\.edu\.tr$/;
+                    if (!emailPattern.test(this.username)) {
+                        this.errorMessage = "Geçerli bir Sakarya Üniversitesi mail adresi girin.";
+                        return;
+                    }
+                    if (this.password !== this.username.split('@')[0]) {
+                        this.errorMessage = "Şifre, kullanıcı adının domain içermeyen kısmı olmalıdır.";
+                        return;
+                    }
+                    this.submitForm();
+                },
+                submitForm() {
+                    const formData = new FormData();
+                    formData.append('username', this.username);
+                    formData.append('password', this.password);
+
+                    fetch('login.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === 'success') {
+                            window.location.href = 'welcome.php?username=' + this.username;
+                        } else {
+                            this.errorMessage = "Kullanıcı adı veya şifre yanlış.";
+                        }
+                    })
+                    .catch(error => {
+                        this.errorMessage = "Bir hata oluştu: " + error;
+                    });
+                }
+            }
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF2eJ6OkTr+U8L/4lZXQ1Clu3Puwl5pHZmE5PHmnfT/8" crossorigin="anonymous"></script>
 </body>
 </html>
